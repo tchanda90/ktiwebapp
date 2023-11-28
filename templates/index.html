@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Explainoma</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <style>
+        .input_container {
+          border: 1px solid #e5e5e5;
+        }
+
+        input[type=file]::file-selector-button {
+          background-color: #fff;
+          color: #000;
+          border: 0px;
+          border-right: 1px solid #e5e5e5;
+          padding: 10px 15px;
+          margin-right: 20px;
+          transition: .5s;
+        }
+
+        input[type=file]::file-selector-button:hover {
+          background-color: #eee;
+          border: 0px;
+          border-right: 1px solid #e5e5e5;
+        }
+
+        button {
+          background-image: linear-gradient(92.88deg, #0e457d 9.16%, #09417a 43.89%, #053e78 64.72%);
+          border-radius: 8px;
+          border-style: none;
+          box-sizing: border-box;
+          color: #FFFFFF;
+          cursor: pointer;
+          flex-shrink: 0;
+          font-family: "Inter UI","SF Pro Display",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans","Helvetica Neue",sans-serif;
+          font-size: 16px;
+          font-weight: 500;
+          height: 4rem;
+          padding: 0 1.6rem;
+          text-align: center;
+          text-shadow: rgba(0, 0, 0, 0.25) 0 3px 8px;
+          transition: all .5s;
+          user-select: none;
+          -webkit-user-select: none;
+          touch-action: manipulation;
+        }
+
+        button:hover {
+          box-shadow: rgba(80, 63, 205, 0.5) 0 1px 30px;
+          transition-duration: .1s;
+        }
+
+        @media (min-width: 768px) {
+          button {
+            padding: 0 2.6rem;
+          }
+        }
+
+
+        .upload-btn {
+            display: inline-block;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background-color: #f9f9f9;
+        }
+
+        .upload-btn img {
+            display: block;
+            margin: 0 auto;
+            width: 50px;
+            height: 50px;
+        }
+
+        .image-container {
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .image {
+            display: none;
+        }
+
+    </style>
+
+    <img src="static/images/BMG_logo.png" alt="Logo" style="float:left;width:100%;padding-bottom:5%">
+    <!-- <img src="static/images/MSGI_logo.png" alt="Logo" style="float:left;width:100%;padding-bottom:5%"> -->
+    <br>
+
+    <script>
+    function displayText() {
+      var textElement = document.getElementById("displayText");
+      var textExplainElement = document.getElementById("explainText");
+
+      textElement.style.display = "block";
+      textExplainElement.style.display = "block";
+    }
+  </script>
+
+</head>
+
+<body style="background-color: #f5f5f5;">
+    <div class="container" style="text-align:center;">
+        <h3>Künstliche Intelligenz zur Melanomerkennung</h3>
+        <br>
+        <form method="POST" action="{{ url_for('index') }}" enctype="multipart/form-data" style="margin: auto;display: block;">
+            <div class="input_container">
+                <input type="file" name="file" id="file" accept=".jpg,.jpeg" required>
+            </div>
+
+            <div class="container" style="text-align:center; float:left; width: 50%">
+                <button type="submit">Diagnostizieren</button>
+            </div>
+
+
+
+        </form>
+            <div class="container" style="text-align:center; float:right; width: 50%">
+            <form method="GET" action="{{ url_for('index') }}" enctype="multipart/form-data">
+                <button type="submit" >Löschen</button>
+            </form>
+        </div>
+
+        {% if prediction in ['Nävus', 'Melanom']%}
+
+            <div style="padding:5%">
+                <h4><strong>{{ diagnosis }} </strong> </h4>
+            </div>
+            <div class="explain">
+                <img src={{url+'a.jpg'}} alt="Chart" height="auto" width="70%">
+            </div>
+            <br>
+            <br>
+            <button onclick="displayText()">Erklären</button>
+            <h4 id="displayText" style="display: none;padding:5%"> <strong> {{ explanation }}. </strong> </h4>
+
+            <h7 id="explainText" style="display: none;padding:0%"> {{ detailed_explanation }} </h7>
+
+            <br><br>
+            <div style="text-align:center;padding:10%" >
+                <button id="displayImagesBtn" onclick="displayImages()">Beispielläsionen</button>
+                <button id="displayExplanationImagesBtn" onclick="displayExplanationImages()">Ähnliche Läsionen</button>
+            </div>
+
+            <div style="text-align:center;padding:10%" id="imageContainer">
+                <script>
+                    function displayImages() {
+                      var imageContainer = document.getElementById('imageContainer');
+                      var explanation_abbr = "{{explanation_abbr}}";
+
+                      for (var i = 1; i <= 25; i++) {
+                        var image = document.createElement('img');
+                        image.src = 'static/images/sample_images/img' + i + '.jpg';
+                        image.className = 'image';
+
+                        var container = document.createElement('div');
+                        container.className = 'image-container';
+                        container.appendChild(image);
+
+                        imageContainer.appendChild(container);
+                      }
+
+                      var images = document.getElementsByClassName('image');
+                      for (var j = 0; j < images.length; j++) {
+                        images[j].style.display = 'block';
+                      }
+
+                      // Disable the other button
+                      var displayImagesBtn = document.getElementById('displayImagesBtn');
+                       displayImagesBtn.disabled = true;
+                    }
+
+
+
+
+                </script>
+
+            <div style="text-align:center;padding:10%" id="ExplanationImageContainer">
+            <script>
+                function displayExplanationImages() {
+                  var imageContainer = document.getElementById('ExplanationImageContainer');
+
+                  var explanation_abbr = "{{explanation_abbr}}";
+
+                  for (var i = 1; i <= 5; i++) {
+                    var image = document.createElement('img');
+                    image.src = image.src = 'static/images/characteristics_images/'+ explanation_abbr +'/img' + i + '.jpg';
+                    image.className = 'image';
+
+                    var container = document.createElement('div');
+                    container.className = 'image-container';
+                    container.appendChild(image);
+
+                    imageContainer.appendChild(container);
+                  }
+
+                  var images = document.getElementsByClassName('image');
+                  for (var j = 0; j < images.length; j++) {
+                    images[j].style.display = 'block';
+                  }
+                  // Disable the other button
+                  var displayExplanationImagesBtn = document.getElementById('displayExplanationImagesBtn');
+                  displayExplanationImagesBtn.disabled = true;
+
+                }
+
+            </script>
+
+        </div>
+
+
+        {% endif %}
+    </div>
+
+
+</body>
+</html>
