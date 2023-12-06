@@ -8,7 +8,6 @@ Web app for the Explainoma algorithm developed by KTI. Currently only a minimum 
 conda create -n "explainoma" python=3.9.7 
 conda activate explainoma
 pip install -r requirements.txt
-conda install -c conda-forge flask=2.2.2
 ```
 #### Run
 ```
